@@ -1,0 +1,544 @@
+================================================================================
+PANDUAN PROYEK — KATALOG MENU KAFE (Flutter)
+Penjelasan bahasa awam: apa yang dilakukan aplikasi ini, bagaimana alurnya,
+dan apa tugas setiap file. Ditulis untuk pembaca yang belum pernah ngoding.
+================================================================================
+
+Cara membaca dokumen ini: bagian 1 memberi gambaran besar, bagian 2 menjelaskan
+alur pemakaian aplikasi selangkah demi selangkah, bagian 3 membahas satu per
+satu file, dan bagian 4 berisi istilah teknis yang sering muncul.
+
+
+================================================================================
+1. GAMBARAN BESAR — APA INI SEBENARNYA?
+================================================================================
+
+Bayangkan aplikasi ini sebagai sebuah KAFE.
+
+  * Ada PAPAN MENU di dinding (daftar 10 menu dengan harga).
+  * Ada PELAYAN yang membalik papan kecil "HABIS" saat bahan sebuah menu
+    sudah ludes.
+  * Ada PINTU yang membawa tamu ke RUANGAN KARTU MENU, tempat satu menu
+    dipamerkan besar-besaran lengkap dengan ceritanya.
+
+Itulah aplikasi ini: sebuah katalog kafe digital dengan dua layar.
+
+  Layar 1 (Katalog)  : daftar 10 menu berbentuk kartu.
+  Layar 2 (Detail)   : satu menu ditampilkan besar, ada deskripsi dan harga.
+
+Aplikasi ini dibuat sebagai LATIHAN, jadi isinya sengaja sederhana. Yang
+dilatih bukan fiturnya, melainkan tiga hal:
+
+  a. Membuat kotak berwarna bagus (istilahnya BoxDecoration) — seperti memilih
+     cat, bingkai, dan bayangan untuk papan menu.
+  b. Membuat perubahan yang halus, bukan mendadak (istilahnya animasi) —
+     seperti lampu yang diredupkan perlahan, bukan dimatikan sekaligus.
+  c. Membuat aplikasi tidak lemot, walau ada animasi yang jalan terus.
+
+Penting: aplikasi ini TIDAK menyimpan data ke internet atau ke memori HP.
+Kalau aplikasi ditutup lalu dibuka lagi, semua status kembali seperti semula
+(menu "Roti Bakar Srikaya" dan "Es Teh Lemon" kembali berstatus habis).
+
+
+================================================================================
+2. ALUR KERJA APLIKASI — DARI DIBUKA SAMPAI DITUTUP
+================================================================================
+
+--- Langkah 1: aplikasi dinyalakan -------------------------------------------
+
+Saat ikon aplikasi diketuk, sistem menjalankan satu fungsi bernama main().
+Anggap main() sebagai SAKELAR UTAMA: ia hanya melakukan satu hal, yaitu
+menyalakan seluruh aplikasi dan menunjuk layar pertama yang harus tampil.
+
+main() lalu menyerahkan pekerjaan ke MainApp. MainApp adalah GEDUNGNYA:
+ia menentukan "tema" (warna cat, gaya tulisan) dan menentukan bahwa ruangan
+pertama yang dibuka adalah Katalog.
+
+--- Langkah 2: daftar menu diambil dari "buku resep" --------------------------
+
+Katalog tidak mengarang data sendiri. Ia membaca daftar 10 menu dari satu
+tempat, yaitu kDaftarMenuAwal di folder model. Anggap model sebagai BUKU
+RESEP di dapur: berisi nama menu, harga, ikon, deskripsi, dan status
+tersedia/habis.
+
+Katalog menyalin isi buku resep itu ke dalam "buku catatannya sendiri".
+Kenapa disalin? Supaya buku resep aslinya tetap bersih dan tidak ikut
+tercoret-coret saat status menu diubah. Bayangkan buku resep perpustakaan:
+kamu memfotokopi halaman tertentu untuk dicoret-coret, bukan mencorat-coret
+buku aslinya.
+
+--- Langkah 3: kartu menu digambar satu per satu -----------------------------
+
+Di layar ada 10 kartu. Tapi HP tidak menggambar semuanya sekaligus. Aplikasi
+hanya menggambar kartu yang SEDANG TERLIHAT di layar, dan menambah/membuang
+kartu saat kamu menggulir. Ini seperti petugas yang hanya menaruh makanan di
+meja yang sedang dilewati tamu, bukan menaruh 10 piring sekaligus.
+
+Setiap kartu punya tinggi tetap (104 piksel + jarak 12 piksel). Karena
+tingginya sudah diketahui dari awal, aplikasi bisa menghitung posisi gulir
+dengan cepat tanpa mengukur isi kartu satu per satu.
+
+--- Langkah 4: menekan lama sebuah kartu = mengubah status -------------------
+
+Tekan dan tahan satu kartu (kira-kira setengah detik). Kartu itu akan:
+
+  1. Berubah menjadi agak tembus pandang (transparan 40%) secara PERLAHAN
+     selama 0,4 detik — tidak langsung "jepret".
+  2. Memunculkan label merah bertulisan "Habis" di pojok kanan bawah.
+
+Tekan lama lagi, dan kartu kembali penuh sambil label "Habis" menghilang,
+juga secara perlahan.
+
+Perhatikan hal penting: label "Habis" sengaja diletakkan DI LUAR bagian yang
+memudar. Alasannya sederhana — kalau ikut memudar, tulisan "Habis" jadi
+sayup-sayup dan sulit dibaca. Ibaratnya: kalau lampu ruangan diredupkan,
+papan tulisan "TUTUP" tetap harus terang.
+
+--- Langkah 5: mengetuk kartu = pindah ke halaman detail --------------------
+
+Ketuk (bukan tahan) satu kartu. Aplikasi membuka halaman detail, dan di sini
+terjadi trik visual yang jadi inti latihan ini: ANIMASI HERO.
+
+Ikon menu yang di katalog berbentuk LINGKARAN kecil akan "terbang" ke tengah
+layar detail dan berubah menjadi PERSEGI BESAR, sambil bentuk sudutnya
+berubah bertahap dari bulat penuh menjadi agak kotak. Perjalanannya memakan
+waktu 0,6 detik dan menempuh jalur MELENGKUNG, bukan garis lurus.
+
+Perumpamaannya: seperti seekor burung yang terbang dari satu dahan ke dahan
+lain dengan jalur melengkung — bukan dipindahkan secara instan oleh tangan
+sakti. Selama terbang, "burung"-nya digambar ulang tiap sepersekian detik
+supaya perubahan ukuran dan bentuk sudutnya mulus.
+
+Kenapa harus ada animasi khusus untuk ini? Karena aplikasi butuh dua hal yang
+sering bertabrakan: (1) perpindahan halaman yang lambatnya 0,6 detik, dan
+(2) bentuk yang berubah di tengah jalan. Solusi teknisnya dijelaskan di
+bagian 3 pada file menu_hero.dart dan detail_page.dart.
+
+--- Langkah 6: kembali ke katalog --------------------------------------------
+
+Tekan tombol panah di kiri atas, dan animasi yang tadi berjalan MUNDUR:
+persegi besar mengecil jadi lingkaran lagi, kembali ke posisi kartunya.
+Ini terjadi otomatis — aplikasi memakai "jalur yang sama" untuk pulang.
+
+--- Yang berjalan terus di latar: cangkir berputar ---------------------------
+
+Di bagian atas layar katalog ada ikon cangkir yang berputar tanpa henti,
+satu putaran penuh setiap 4 detik. Animasi ini TIDAK berhenti selama layar
+katalog terbuka.
+
+Karena animasi ini hidup terus, ia berpotensi membuat HP bekerja keras.
+Karena itulah ada dua penghematan:
+  1. Gambar cangkirnya dibuat SEKALI saja, lalu diputar-putar (tidak digambar
+     ulang tiap frame). Seperti memutar koin di atas meja, bukan menggambar
+     ulang koin 60 kali per detik.
+  2. Area gambarnya dipagari (RepaintBoundary) supaya saat cangkir berputar,
+     bagian layar lain tidak ikut digambar ulang.
+
+Dan saat layar katalog ditutup, putaran itu WAJIB dimatikan. Kalau tidak,
+animasinya tetap jalan di belakang layar dan menghabiskan baterai. Di kode
+ini hal itu ditangani oleh fungsi dispose().
+
+
+================================================================================
+3. SATU PER SATU FILE — TUGASNYA APA
+================================================================================
+
+Aplikasi ini sengaja dipecah menjadi banyak file kecil. Alasannya sama
+seperti dapur restoran yang rapi: bumbu di satu rak, piring di rak lain,
+resep di buku terpisah. Kalau semua ditumpuk di satu meja, susah dicari.
+
+Aturan pembagiannya sederhana dan penting untuk dipahami:
+
+  model  -> "BUKU RESEP"   : hanya data, tidak tahu soal tampilan.
+  widget -> "PERABOT"      : hanya menggambar, tidak menyimpan data penting.
+  page   -> "RUANGAN"      : menyusun perabot dan memegang data yang berubah.
+
+Arah ketergantungannya satu arah: ruangan memakai perabot, perabot memakai
+buku resep. Perabot tidak pernah memanggil ruangan, dan buku resep tidak tahu
+apa pun soal ruangan. Ini membuat perubahan di satu bagian tidak merusak
+bagian lain — seperti mengganti kursi tanpa membongkar dinding.
+
+--------------------------------------------------------------------------------
+3.1  lib/main.dart  —  SAKELAR UTAMA DAN GEDUNG
+--------------------------------------------------------------------------------
+
+Tugasnya:
+  * Menjalankan aplikasi (fungsi main()).
+  * Menentukan tema: warna dasar cokelat (0xFF6D4C41), latar krem
+    (0xFFF7F2ED), dan menyembunyikan pita "DEBUG" di pojok layar.
+  * Menunjuk KatalogPage sebagai layar pertama.
+
+Perumpamaan: file ini adalah gedungnya. Ia tidak mengatur isi ruangan, hanya
+menentukan cat dinding, penerangan, dan pintu mana yang dibuka pertama.
+
+Yang TIDAK ada di sini: logika menu, animasi, atau tombol. Semua itu urusan
+file lain. File ini sengaja pendek.
+
+--------------------------------------------------------------------------------
+3.2  lib/model/menu_item.dart  —  BUKU RESEP
+--------------------------------------------------------------------------------
+
+Tugasnya:
+  * Mendefinisikan "bentuk" satu menu: MenuItem (id, nama, harga, ikon,
+    tersedia, deskripsi).
+  * Menyimpan data awal 10 menu (kDaftarMenuAwal).
+  * Menyediakan alat format harga: 18000 menjadi "Rp 18.000".
+
+Dua menu sengaja dibuat berstatus HABIS sejak awal (Roti Bakar Srikaya dan
+Es Teh Lemon). Tujuannya supaya efek transparan dan label "Habis" langsung
+kelihatan begitu aplikasi dibuka — tidak perlu menekan lama dulu.
+
+Ada satu konsep penting di sini: "objek tidak boleh diubah langsung"
+(immutable). Kalau status sebuah menu berubah, aplikasi tidak mencoret objek
+lama, melainkan MEMBUAT SALINAN BARU dengan satu nilai berbeda (lewat
+copyWith). Perumpamaannya seperti menulis ulang satu halaman resep yang sudah
+diperbarui, bukan mencoret halaman lama dengan tinta. Hasilnya: riwayat
+perubahan mudah dilacak dan tidak ada data yang "berubah diam-diam".
+
+Kenapa format rupiah dibuat manual, tidak pakai paket tambahan? Karena satu
+kebutuhan kecil seperti ini tidak sepadan dengan menambah "alat" baru ke
+proyek. Prinsipnya: jangan bawa perlengkapan tambahan kalau bisa dikerjakan
+sendiri dengan beberapa baris.
+
+--------------------------------------------------------------------------------
+3.3  lib/page/katalog_page.dart  —  RUANGAN PAPAN MENU (Layar 1)
+--------------------------------------------------------------------------------
+
+Tugasnya:
+  * Menyimpan daftar menu yang sedang tampil (salinan buku resep).
+  * Menyusun header di atas + daftar kartu yang bisa digulir di bawahnya.
+  * Mengubah status menu saat kartu ditekan lama.
+  * Membuka halaman detail saat kartu diketuk.
+
+Ini satu-satunya tempat di seluruh aplikasi yang boleh mengubah data menu.
+Kalau perabot (kartu) adalah kursi, maka file ini adalah orang yang berhak
+memindahkan kursi. Kartu sendiri hanya berkata "ada yang menekan saya, tolong
+urus" lewat pesan bernama callback (onTap / onLongPress).
+
+Alur perubahan statusnya:
+  kamu tahan kartu -> kartu lapor ke halaman -> halaman membuat salinan menu
+  dengan status terbalik -> halaman memberi tahu "data berubah, gambar ulang!"
+  (setState) -> layar diperbarui, animasi fade berjalan.
+
+Header juga diberi informasi ringkasan: "10 menu • 2 sedang habis". Angka itu
+dihitung ulang setiap kali layar digambar.
+
+--------------------------------------------------------------------------------
+3.4  lib/page/detail_page.dart  —  RUANGAN KARTU BESAR (Layar 2)
+--------------------------------------------------------------------------------
+
+Tugasnya:
+  * Menampilkan satu menu secara lengkap: ikon besar, nama, harga, deskripsi,
+    dan label status.
+  * Menyediakan tombol kembali.
+  * Menentukan DURASI perpindahan halaman: 0,6 detik — nilai inilah yang
+    dipakai animasi Hero.
+
+Kenapa durasinya diatur di sini, bukan di animasinya? Karena animasi Hero
+"menumpang" pada perpindahan halaman. Kalau perpindahan halaman hanya 0,3
+detik (bawaan Flutter), maka Hero juga cuma 0,3 detik. Jadi durasi 0,6 detik
+harus dipasang di pintunya, bukan di burungnya.
+
+Perumpamaan: kalau kamu ingin tamu berjalan masuk ruangan selama 6 detik,
+atur di pintu masuknya. Burung yang terbang mengikuti tamu akan otomatis
+menyesuaikan.
+
+Halaman ini sengaja "tanpa ingatan" (stateless): ia hanya menampilkan menu
+yang diberikan, tidak mengubah apa pun. Status habis/tersedia di sini hanya
+informasi, bukan tombol.
+
+--------------------------------------------------------------------------------
+3.5  lib/widget/menu_card.dart  —  KARTU MENU (perabot utama)
+--------------------------------------------------------------------------------
+
+Tugasnya: menggambar satu kartu menu berisi ikon, nama, harga, dan tanda panah.
+
+Isi kartu:
+  * Satu kotak dengan gradasi cokelat, sudut membulat (radius 20), garis tepi
+    tipis, dan bayangan lembut. Semua itu ditulis SEKALI dalam satu dekorasi
+    yang disimpan sebagai konstanta, tidak dibuat ulang tiap kali kartu
+    digambar. Perumpamaannya: bingkai foto dicetak sekali, bukan dibikin ulang
+    setiap kali ada yang melihatnya.
+  * Ikon di dalam lingkaran (dari menu_artwork.dart).
+  * Area sentuh yang memunculkan efek riak (ripple) saat ditekan, dan
+    potongannya mengikuti sudut membulat kartu.
+
+Bagian fade:
+  * Kartu dibungkus lapisan yang mengatur transparansi. Saat tersedia nilainya
+    1,0 (penuh); saat habis nilainya 0,4. Perubahannya berjalan 0,4 detik
+    dengan gerakan melambat di akhir (easeOut).
+  * Lapisan ini SELALU ada di dalam susunan tampilan, hanya nilainya yang
+    berubah. Ini penting: kalau lapisan dipasang hanya ketika menu habis,
+    animasinya tidak akan pernah terlihat — karena lapisan baru lahir langsung
+    dalam keadaan sudah transparan. Seperti lampu dimmer: harus sudah terpasang
+    sebelum dinyalakan, kalau dipasang mendadak tidak ada proses meredupnya.
+  * Label "Habis" ada di tumpukan terpisah di atas kartu, di luar area fade,
+    dan diatur agar tidak menghalangi sentuhan.
+
+File ini juga menetapkan tiga angka penting: tinggi kartu 104, jarak antar
+kartu 12, dan durasi 400 milidetik. Angka tinggi dan jarak dipakai halaman
+katalog untuk menghitung posisi gulir.
+
+--------------------------------------------------------------------------------
+3.6  lib/widget/menu_artwork.dart  —  MEDIA IKON (lingkaran & persegi)
+--------------------------------------------------------------------------------
+
+Tugasnya: menggambar kotak berisi ikon menu, dalam dua versi resmi:
+
+  * Versi KECIL  -> lingkaran diameter 56 piksel (dipakai di kartu).
+  * Versi BESAR   -> persegi 220 piksel dengan sudut membulat 16 (dipakai di
+                     halaman detail).
+
+Keduanya memakai gradasi dan bayangan yang sama, dan ukuran ikon selalu 42%
+dari kotaknya, jadi ikon selalu proporsional. Perumpamaannya: satu logo yang
+sama, dicetak di stiker kecil dan di papan reklame besar — isinya identik,
+hanya ukurannya berbeda. Kesamaan inilah yang membuat animasi Hero terlihat
+mulus: yang "terbang" isinya mirip, hanya berubah ukuran dan bentuk sudut.
+
+Satu catatan teknis penting: sebuah kotak tidak boleh sekaligus berbentuk
+lingkaran murni (shape: circle) dan punya sudut membulat (borderRadius) —
+aplikasi akan error. Karena itu versi kecil memakai bentuk lingkaran, dan
+versi besar memakai sudut membulat. Seperti gelas: tidak bisa sekaligus
+"bulat tanpa sudut" dan "kotak bersudut".
+
+--------------------------------------------------------------------------------
+3.7  lib/widget/menu_hero.dart  —  PEREKAT ANIMASI TERBANG
+--------------------------------------------------------------------------------
+
+Tugasnya: mengurus semua hal yang membuat ikon bisa "terbang" dari kartu ke
+halaman detail.
+
+Ada empat bagian:
+
+  1. Pembuat nama pasangan (tag).
+     Setiap menu punya nama unik, misalnya "menu-hero-m1". Kartu dan halaman
+     detail harus memakai nama yang SAMA PERSIS supaya aplikasi tahu keduanya
+     pasangan. Kalau beda, animasinya tidak terjadi. Ini seperti nomor loker:
+     kunci dan lokernya harus bernomor sama.
+
+  2. Penentu jalur terbang.
+     Memakai jalur melengkung (busur), bukan garis lurus. Jadi ikon tidak
+     bergerak seperti ditarik penggaris, melainkan seperti dilempar sedikit
+     melengkung. Inilah yang diminta soal.
+
+  3. Pembuat tampilan "saat terbang" (shuttle).
+     Ini yang benar-benar digambar selama penerbangan. Karena Flutter hanya
+     membangun tampilan ini SEKALI di awal penerbangan, perubahan bentuk harus
+     dihitung ulang di dalamnya tiap sepersekian detik. Perumpamaannya:
+     animator hanya menerima satu lembar gambar di awal, jadi ia harus
+     menggambar ulang sendiri di setiap frame untuk membuat gerakannya halus.
+
+  4. Tampilan terbang itu sendiri (MenuHeroShuttle).
+     Ukuran dan radius sudut dihitung bertahap dari nilai awal ke nilai akhir:
+       ukuran: 56 -> 220 piksel
+       radius: 28 (bulat penuh) -> 16 (agak kotak)
+     Ikon di dalamnya ikut membesar mengikuti ukuran kotak. Hasilnya bentuk
+     berubah mulus, tidak "melompat" di detik terakhir.
+
+--------------------------------------------------------------------------------
+3.8  lib/widget/menu_status_badge.dart  —  LABEL STATUS
+--------------------------------------------------------------------------------
+
+Tugasnya: menggambar label kecil berbentuk kapsul (sudut sangat membulat)
+bertuliskan "Tersedia" (hijau) atau "Habis" (merah).
+
+Dipakai di dua tempat:
+  * Di kartu katalog: hanya versi "Habis" yang muncul (warna merah), dan
+    munculnya perlahan.
+  * Di halaman detail: selalu muncul, hijau bila tersedia, merah bila habis.
+
+Perumpamaan: ini stiker label harga di kemasan — bentuknya sama di mana pun,
+isinya menyesuaikan keadaan.
+
+--------------------------------------------------------------------------------
+3.9  lib/widget/spinning_cup_icon.dart  —  CANGKIR BERPUTAR
+--------------------------------------------------------------------------------
+
+Tugasnya: memutar ikon cangkir 360 derajat terus-menerus, satu putaran per
+4 detik (bisa diatur).
+
+Cara kerjanya:
+  * Ada "mesin animasi" (AnimationController) yang menghasilkan angka 0 sampai
+    1 berulang-ulang. Angka itu dipetakan menjadi sudut 0 sampai 2π radian
+    (setara 0-360 derajat).
+  * Gambar cangkir dibuat SEKALI dan disimpan, lalu tiap frame hanya sudutnya
+    yang diubah. Menghemat kerja: seperti memutar foto di tangan, bukan
+    memotret ulang objeknya 60 kali per detik.
+  * Ada pagar gambar (RepaintBoundary) supaya saat cangkir berputar, bagian
+    layar lain tidak ikut dihitung ulang.
+  * Saat widget dibuang dari layar, mesin animasinya dimatikan dan dibuang
+    (dispose). Tanpa ini, animasi tetap berjalan di latar dan membuang
+    baterai — seperti kipas yang lupa dimatikan setelah ruangan ditinggalkan.
+
+--------------------------------------------------------------------------------
+3.10  lib/widget/katalog_header.dart  —  PAPAN JUDUL ATAS
+--------------------------------------------------------------------------------
+
+Tugasnya: menggambar kotak gradasi cokelat di bagian atas layar katalog,
+berisi:
+  * Judul "Katalog Menu".
+  * Ringkasan: "10 menu • 2 sedang habis".
+  * Petunjuk singkat: "Ketuk untuk detail • tekan lama untuk ubah status".
+  * Cangkir berputar di sisi kanan.
+
+Header ini "tidak tahu" daftar menunya. Ia hanya menerima dua angka (total
+menu dan jumlah yang habis). Perumpamaannya: papan skor yang hanya butuh angka
+skor, tidak perlu tahu jalannya pertandingan.
+
+--------------------------------------------------------------------------------
+3.11  File pendukung di luar lib/
+--------------------------------------------------------------------------------
+
+pubspec.yaml
+  Daftar "belanja" proyek: nama aplikasi, versi, dan paket apa saja yang
+  dipakai. Isinya antara lain paket material_ui 1.11.1 (bahan tampilan resmi
+  Flutter) dan flutter_lints (pemeriksa gaya penulisan kode).
+
+pubspec.lock
+  Catatan versi pasti dari semua paket yang benar-benar terpasang. Ini yang
+  membuat dua komputer memakai versi yang sama persis — seperti struk belanja
+  yang mencatat merek dan ukuran tepat, bukan hanya "sabun".
+
+android/
+  Berkas untuk membangun aplikasi versi Android (build.gradle.kts,
+  settings.gradle.kts, dan lain-lain). Perumpamaannya: surat izin dan cetak
+  biru bangunan kalau aplikasi mau "dibangun" jadi gedung di HP. Tidak perlu
+  disentuh untuk pekerjaan sehari-hari.
+
+web/
+  Versi yang bisa dibuka di browser: index.html (halaman pembuka),
+  manifest.json (nama dan ikon saat dipasang di layar utama), serta folder
+  icons/ berisi gambar ikon berbagai ukuran.
+
+agend.md
+  Papan agenda: apa yang sudah selesai, apa yang belum, dan prioritas
+  berikutnya. Ini "to-do list" proyek.
+
+memory.md
+  Catatan ingatan proyek: latar belakang, versi alat yang dipakai, keputusan
+  desain beserta alasannya, dan jebakan teknis yang sudah pernah ditemui.
+  Fungsinya supaya sesi berikutnya tidak mengulang kesalahan yang sama.
+
+skill.md
+  Buku jurus: potongan pola kode yang sudah terbukti dipakai di proyek ini,
+  lengkap dengan konvensi penulisan. Kalau ingin menambah fitur, tiru pola
+  di sini supaya gaya kodenya tetap seragam.
+
+laporan_performa.md
+  Rancangan laporan pengukuran kecepatan: metrik yang dipakai, cara mengukur
+  dengan DevTools, tabel "sebelum vs sesudah", dan penjelasan mengapa versi
+  sekarang lebih hemat. Catatan: tabel angkanya BELUM terisi karena
+  pengukuran belum pernah dijalankan di mesin dengan Flutter.
+
+panduan_proyek.txt
+  Dokumen yang sedang kamu baca ini.
+
+
+================================================================================
+4. ISTILAH TEKNIS, DIJELASKAN SEDERHANA
+================================================================================
+
+Widget
+  Sebuah "balok bangunan" tampilan. Semua yang terlihat di layar adalah
+  widget: teks, kotak, tombol, jarak kosong, bahkan susunan tak terlihat.
+  Bayangkan LEGO: aplikasi disusun dari balok-balok kecil.
+
+Stateless vs Stateful
+  Stateless  = balok yang tidak berubah (tulisan judul, ikon). Sekali dipasang,
+               selesai.
+  Stateful   = balok yang punya "ingatan" dan bisa berubah (daftar menu,
+               animasi yang berjalan).
+
+setState
+  Perintah "data berubah, tolong gambar ulang layarnya". Tanpa ini, data bisa
+  berubah di belakang layar tapi yang terlihat tetap lama.
+
+BoxDecoration
+  Resep tampilan sebuah kotak: warna atau gradasi, sudut membulat, garis tepi,
+  dan bayangan. Di proyek ini dipakai untuk kartu, ikon, header, dan label.
+
+Gradasi (LinearGradient)
+  Warna yang berubah perlahan dari satu sisi ke sisi lain, misalnya cokelat
+  tua ke cokelat muda. Membuat tampilan terasa lebih "hidup" daripada warna
+  datar.
+
+AnimatedOpacity
+  Pengatur transparansi yang berubah secara perlahan. Nilai 1,0 = terlihat
+  penuh, 0,4 = agak tembus pandang, 0,0 = tidak terlihat. Perubahannya
+  dianimasikan, bukan mendadak.
+
+Hero (animasi)
+  Fitur Flutter untuk membuat satu elemen "terbang" dari satu halaman ke
+  halaman lain. Namanya diambil dari istilah "hero shot" di film. Di proyek
+  ini: ikon menu.
+
+Hero tag
+  Nama pengenal yang menghubungkan elemen asal dan elemen tujuan. Harus sama
+  persis, kalau tidak, animasinya batal.
+
+RectTween / MaterialRectArcTween
+  Penentu jalur perpindahan Hero. Versi "Arc" membuat jalurnya melengkung.
+
+ClipRRect
+  Alat untuk memotong sudut-sudut sebuah kotak agar membulat. Dipakai saat
+  Hero terbang supaya bentuk ikon mengikuti radius yang berubah.
+
+Radius
+  Tingkat kebulatan sudut. Radius 28 pada kotak 56 piksel menghasilkan
+  lingkaran sempurna; radius 16 pada kotak 220 piksel terlihat hampir kotak.
+
+AnimationController
+  Mesin animasi. Menghasilkan angka yang naik-turun seiring waktu, dan harus
+  dimatikan saat tidak dipakai (dispose).
+
+AnimatedBuilder
+  Penggambar ulang yang hanya memperbarui bagian yang beranimasi, sambil
+  memakai ulang bagian lain yang tidak berubah. Ini kunci utama penghematan.
+
+RepaintBoundary
+  Pagar yang memisahkan area gambar. Bagian di dalam pagar bisa berubah tanpa
+  memaksa bagian lain ikut digambar ulang.
+
+itemExtent
+  Pemberitahuan bahwa "semua item tingginya sama". Membuat perhitungan gulir
+  lebih cepat karena aplikasi tidak perlu mengukur isi tiap item.
+
+const
+  Penanda bahwa sebuah objek tidak berubah, jadi cukup dibuat sekali dan
+  dipakai terus. Hemat memori dan mempercepat tampilan. Ibaratnya: cetak
+  satu spanduk, pakai berkali-kali, daripada mengecat ulang tiap hari.
+
+Callback (onTap / onLongPress)
+  Pesan dari perabot ke ruangan: "ada yang menekan saya". Kartu tidak
+  mengubah data sendiri; ia hanya melapor.
+
+Navigator
+  Pengatur perpindahan antarhalaman, seperti tumpukan kartu: buka halaman
+  baru di atas, lalu tutup untuk kembali ke halaman sebelumnya.
+
+Profile mode
+  Mode menjalankan aplikasi untuk MENGUKUR kecepatan. Berbeda dengan mode
+  debug (untuk mencari kesalahan) yang jauh lebih lambat, sehingga angkanya
+  tidak bisa dipercaya sebagai ukuran performa.
+
+DevTools
+  Panel pemeriksa dari Flutter untuk melihat berapa milidetik tiap frame
+  butuh waktu. Dipakai pada ketentuan performa yang masih belum diukur.
+
+
+================================================================================
+5. RINGKASAN SATU PARAGRAF
+================================================================================
+
+Aplikasi ini adalah katalog kafe dua halaman. Data 10 menu tinggal di satu
+tempat (model) dan hanya halaman katalog yang boleh mengubahnya. Kartu menu
+memudar perlahan saat status berubah, ikon menu terbang melengkung dari
+kartu ke halaman detail sambil berubah dari lingkaran kecil menjadi persegi
+besar, dan cangkir di header berputar terus dengan cara hemat tenaga. Semua
+file dipisahkan menurut tugasnya — data, perabot tampilan, dan ruangan —
+supaya mudah dirawat, dan seluruh animasi diatur agar halus tanpa membuat
+aplikasi lemot.
+
+================================================================================
+Selesai. Terakhir diperbarui: 19 November 2026.
+================================================================================
